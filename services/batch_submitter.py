@@ -29,18 +29,17 @@ def submit_batch_job(bucket: str, file_name: str):
                                 "image_uri": container_image,
                                 "commands": [
                                     "python",
-                                    "-m",
-                                    "app.main",
+                                    "/app/main.py",
                                     "--bucket", bucket,
                                     "--file", file_name,
                                     "--concurrency", str(parallelism)
                                 ]
                             }
                         }
-                    ],
+                    ]
+                },
                     "task_count": 1,
                     "parallelism": parallelism
-                }
             }
         ],
         "allocation_policy": {
@@ -49,9 +48,7 @@ def submit_batch_job(bucket: str, file_name: str):
             ]
         },
         "logs_policy": {"destination": "CLOUD_LOGGING"}
-}
+    }
 
     response = client.create_job(parent=parent, job=job, job_id=job_id)
     return job_id
-
- 
