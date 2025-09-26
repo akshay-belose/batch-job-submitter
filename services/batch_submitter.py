@@ -29,14 +29,16 @@ def submit_batch_job(bucket: str, file_name: str):
                                 "image_uri": container_image,
                                 "commands": [
                                     "python",
-                                    "app/services/video_processor.py",
-                                    "--input_file", f"gs://{bucket}/{file_name}",
-                                    "--batch_size", str(batch_size)
+                                    "-m",
+                                    "app.main",
+                                    "--bucket", bucket,
+                                    "--file", file_name,
+                                    "--concurrency", str(parallelism)
                                 ]
                             }
                         }
                     ],
-                    "task_count": 1,  # total tasks are managed internally by the container slicing
+                    "task_count": 1,
                     "parallelism": parallelism
                 }
             }
@@ -46,8 +48,8 @@ def submit_batch_job(bucket: str, file_name: str):
                 {"policy": {"machine_type": "e2-standard-4"}}
             ]
         },
-        "logs_policy": {"destination": "CLOUD_LOGGING"},
-    }
+        "logs_policy": {"destination": "CLOUD_LOGGING"}
+}
 
     response = client.create_job(parent=parent, job=job, job_id=job_id)
     return job_id
